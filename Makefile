@@ -34,3 +34,6 @@ python-install:
 	sudo apt install python3 -y
 	@echo "installing pip"
 	sudo apt install python3-pip -y
+	@ echo "verifying installs"
+	python3 --version  # verify
+	pip3 --version  # verify
