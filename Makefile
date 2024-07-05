@@ -5,10 +5,10 @@ BUILD_DIR := build
 
 ENV_FILE := /etc/environment  # system wide
 
-# GO_VER ?= $(curl 'https://go.dev/VERSION?m=text')  # curl for most recent version'
+#GO_VER = $(shell curl -s 'https://go.dev/VERSION?m=text')  # curl for most recent version
 GO_VER = 1.22.5
-GO_PACKAGE := go$(GO_VER).linux-amd64.tar.gz
-GO_PATH := /usr/local/go
+GO_PACKAGE = go$(GO_VER).linux-amd64.tar.gz
+GO_PATH = /usr/local/go
 
 # --- unique
 # includes make and the gcc compilers
@@ -39,7 +39,10 @@ python-install:
 	pip3 --version  # verify
 
 go-install:
-	@echo "# running - go-install (version: $(GO_VER))"
+	@echo "# running - go-install"
+	@echo "go path: $(GO_PATH)"
+	@echo "go version: $(GO_VER)"
+	@echo "go package: $(GO_PACKAGE)"
 	wget https://go.dev/dl/$(GO_PACKAGE)
 	sudo rm -rf $(GO_PATH)
 	sudo tar -C /usr/local -xzf $(GO_PACKAGE)
@@ -47,6 +50,9 @@ go-install:
 	@if grep -qF "PATH=$(GO_PATH)/bin" $(ENV_FILE); then \
 		echo "Go Path ($(GO_PATH)) already in $(ENV_FILE)"; \
 	else \
-		echo "PATH=$(GO_PATH)/bin:$$PATH" | sudo tee -a $(ENV_FILE) > /dev/null; \
+		echo "PATH=\"$(GO_PATH)/bin:$$PATH\"" | sudo tee $(ENV_FILE) > /dev/null; \
 	fi
 	go version
+
+test:
+	echo "export PATH=\$$PATH:$(GO_PATH)" | sudo tee /etc/profile.d/gopath.sh
