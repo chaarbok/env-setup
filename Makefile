@@ -1,8 +1,12 @@
-.PHONY: all init git-install git-init\
+.PHONY: init git-install git-init python-install go-install
 
 # --- globals
 BUILD_DIR := build
-GO_VER ?= 1.22.4
+
+ENV_FILE := /etc/environment  # system wide
+
+# GO_VER ?= $(curl 'https://go.dev/VERSION?m=text')  # curl for most recent version'
+GO_VER = 1.22.5
 GO_PACKAGE := go$(GO_VER).linux-amd64.tar.gz
 GO_PATH := /usr/local/go
 
@@ -35,12 +39,14 @@ python-install:
 	pip3 --version  # verify
 
 go-install:
-	@echo "# running - go-install"
+	@echo "# running - go-install (version: $(GO_VER))"
 	wget https://go.dev/dl/$(GO_PACKAGE)
 	sudo rm -rf $(GO_PATH)
 	sudo tar -C /usr/local -xzf $(GO_PACKAGE)
 	rm -rf $(GO_PACKAGE)
-	@if ! grep -qF "PATH=$(GO_PATH)/bin" /etc/environment; then \
-		echo "PATH=$(GO_PATH)/bin:$$PATH" | sudo tee -a /etc/environment > /dev/null; \
+	@if grep -qF "PATH=$(GO_PATH)/bin" $(ENV_FILE); then \
+		echo "Go Path ($(GO_PATH)) already in $(ENV_FILE)"; \
+	else \
+		echo "PATH=$(GO_PATH)/bin:$$PATH" | sudo tee -a $(ENV_FILE) > /dev/null; \
 	fi
 	go version
