@@ -38,6 +38,10 @@ python-install:
 	python3 --version  # verify
 	pip3 --version  # verify
 
+get-go-latest-version:
+	@echo "# getting go's latest version"
+	@echo "version: $(shell curl -s 'https://go.dev/VERSION?m=text')"
+
 go-install:
 	@echo "# running - go-install"
 	@echo "go path: $(GO_PATH)"
